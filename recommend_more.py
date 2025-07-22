@@ -70,6 +70,7 @@ def mmr(doc_embedding, candidate_embeddings, top_k=5, lambda_param=0.5):
 
 
 def alternative_recommend_more_from_liked_paper(liked_paper_text, label, top_k=5):
+    df = pd.read_csv("cleaned_papers_with_id.csv")
     mask = df["label"] == label
     label_subset_df = df[mask].reset_index(drop=True)
     label_subset_embeddings = embeddings[mask.values]
