@@ -5,7 +5,6 @@ from recommend_more import recommend_more_from_liked_paper, mmr, alternative_rec
 from recommender import predict, recommend_paper
 import json
 import pandas as pd
-from bartsummary import summarize_papers_with_bart
 
 
 
@@ -145,7 +144,7 @@ def webhook():
         
 
     # 如果是请求更多推荐的意图
-    if intent == "getUserIntentforMorePaper":
+    elif intent == "getUserIntentforMorePaper":
         liked_text = redis.get(f"{user_id}:liked_text")
         liked_label = redis.get(f"{user_id}:liked_label")
 
@@ -181,7 +180,7 @@ def webhook():
 
 
     # if not satisfied
-    if intent == "getUserIntentforAlternativePaper":
+    elif intent == "getUserIntentforAlternativePaper":
         liked_text = redis.get(f"{user_id}:liked_text")
         liked_label = redis.get(f"{user_id}:liked_label")
 
@@ -214,37 +213,6 @@ def webhook():
                 {"text": {"text": [response_text]}}
             ]
         })
-
-
-
-    # Get summary
-    elif intent == "getSummary":
-        liked_abstract = redis.get(f"{user_id}:liked_abstract")
-        more_abstracts = redis.get(f"{user_id}:more_abstracts")
-        
-        if liked_abstract is None or more_abstracts is None:
-            return jsonify({
-                "fulfillmentMessages": [
-                    {"text": {"text": ["⚠️ Sorry, I need both the liked and recommended abstracts to generate a summary."]}}
-                ]
-            })
-        
-        # 解析回列表
-        all_abstracts = [liked_abstract] + json.loads(more_abstracts)
-
-        # 转成 DataFrame 结构
-        df_to_summarize = pd.DataFrame(all_abstracts, columns=["original_abstract"])
-
-        # 调用 summarization 函数
-        summary_text = summarize_papers_with_bart(df_to_summarize)
-
-        return jsonify({
-            "fulfillmentMessages": [
-                {"text": {"text": [f"📚 Summary of Selected Papers:\n\n{summary_text}"]}}
-            ]
-        })
-
-    
 
     
     # 兜底情况
