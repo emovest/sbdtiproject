@@ -1,0 +1,13 @@
+flask
+pandas
+numpy
+scikit-learn
+xgboost
+scipy
+torch
+transformers
+sentence-transformers
+joblib
+gunicorn
+accelerate>=0.26.0
+upstash-redis
